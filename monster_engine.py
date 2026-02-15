@@ -377,6 +377,13 @@ def prepare_features(df, sequence_length=30):
         seq = features_normalized[i:i + sequence_length]
         sequences.append(seq)
     
+    data = df.select_dtypes(include=[np.number]).values 
+    
+    data = data[:, :29] 
+    
+    sequences = []
+    for i in range(len(data) - sequence_length + 1):
+        sequences.append(data[i:i + sequence_length])
     return np.array(sequences)
 
 # ════════════════════════════════════════════════════════════════════════════
