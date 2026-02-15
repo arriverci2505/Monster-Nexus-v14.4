@@ -80,7 +80,9 @@ LIVE_CONFIG = {
     # --- 8. EXECUTION ---
     'position_size': 0.15,
     'slippage': 0.0005,
-    'commission': 0.00075
+    'commission': 0.00075,
+
+    'last_webhook_report_time' = -1
 }
 
 # Discord Webhook (set via environment variable or edit here)
@@ -89,18 +91,10 @@ DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472606305645625458/V-G8QB7n
 # State file
 STATE_FILE = "bot_state.json"
 
-def get_vn_time():
-    # Cách đơn giản nhất: UTC+7
-    return datetime.utcnow() + timedelta(hours=7)
-    
-last_webhook_report_time = -1
-
 def send_ai_status_webhook(current_price, regime, config, state, ai_results):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
     if not DISCORD_WEBHOOK or "discord.com" not in DISCORD_WEBHOOK:
         return
-
-    vn_now = get_vn_time()
         
     # Tính Winrate từ lịch sử giao dịch
     history = state.get('trade_history', [])
@@ -110,7 +104,7 @@ def send_ai_status_webhook(current_price, regime, config, state, ai_results):
     # Chuẩn bị nội dung gửi đi
     payload = {
         "embeds": [{
-            "title": "🟢 MATRIX AI - REAL-TIME PREDICTION",
+            "title": "👾 MONSTER NEXUS AI - REAL-TIME PREDICTION"",
             "color": 0x00ff41, # Màu xanh Matrix
             "fields": [
                 {"name": "💵 Giá hiện tại", "value": f"${current_price:,.2f}", "inline": True},
@@ -127,7 +121,7 @@ def send_ai_status_webhook(current_price, regime, config, state, ai_results):
                 {"name": "🌡️ Temperature", "value": f"{config.get('temperature')}", "inline": True},
                 {"name": "🛡️ Lệnh đang mở", "value": f"{len(state['open_trades'])}", "inline": True}
             ],
-            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {vn_now.strftime('%H:%M:%S')}"}
+            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {datetime.utcnow() + timedelta(hours=7).strftime('%H:%M:%S')}"}
         }]
     }
     try:
@@ -800,22 +794,25 @@ def main():
                         p_neutral = probabilities[1]
                         p_sell = probabilities[2]
 
-                        global last_webhook_report_time
-                        vn_now = get_vn_time()
+                        vn_now = datetime.utcnow() + timedelta(hours=7)
                         current_minute = vn_now.minute
-                        
-                        # Kiểm tra nếu phút hiện tại chia hết cho 5 và chưa gửi trong phút này
-                        if current_minute % 5 == 0 and current_minute != last_webhook_report_time:
+
+                        # Kiểm tra mốc 5 phút (ví dụ: 0, 5, 10, 15...)
+                        if current_minute % 5 == 0 and current_minute != LIVE_CONFIG['last_reported_minute']:
+                            
                             ai_vals = {
                                 'buy_p': p_buy,
                                 'sell_p': p_sell,
                                 'neutral_p': p_neutral
                             }
+                            
+                            # Gọi hàm gửi báo cáo
                             send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state, ai_vals)
                             
-                            # Đánh dấu đã gửi phút này để không gửi lặp lại trong vòng 60 giây đó
-                            last_webhook_report_time = current_minute
-                            logger.info(f"📡 Monster Nexus AI: Báo cáo định kỳ lúc {vn_now.strftime('%H:%M')}")
+                            # CẬP NHẬT TRỰC TIẾP VÀO CONFIG ĐỂ KHÓA PHÚT NÀY LẠI
+                            LIVE_CONFIG['last_reported_minute'] = current_minute
+                            
+                            logger.info(f"📡 [Monster Nexus AI] Báo cáo định kỳ lúc {vn_now.strftime('%H:%M:%S')}")
                                 
                         # Determine signal based on regime
                         if is_trending:
