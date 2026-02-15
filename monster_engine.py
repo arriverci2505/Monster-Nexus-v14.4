@@ -89,13 +89,18 @@ DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472606305645625458/V-G8QB7n
 # State file
 STATE_FILE = "bot_state.json"
 
-vn_time = datetime.utcnow() + timedelta(hours=7)
-last_webhook_report_time = 0 
+def get_vn_time():
+    # Cách đơn giản nhất: UTC+7
+    return datetime.utcnow() + timedelta(hours=7)
+    
+last_webhook_report_time = -1
 
 def send_ai_status_webhook(current_price, regime, config, state, ai_results):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
     if not DISCORD_WEBHOOK or "discord.com" not in DISCORD_WEBHOOK:
         return
+
+    vn_now = get_vn_time()
         
     # Tính Winrate từ lịch sử giao dịch
     history = state.get('trade_history', [])
@@ -122,7 +127,7 @@ def send_ai_status_webhook(current_price, regime, config, state, ai_results):
                 {"name": "🌡️ Temperature", "value": f"{config.get('temperature')}", "inline": True},
                 {"name": "🛡️ Lệnh đang mở", "value": f"{len(state['open_trades'])}", "inline": True}
             ],
-            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {vn_time.strftime("%H:%M")}"}
+            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {vn_now.strftime('%H:%M:%S')}"}
         }]
     }
     try:
