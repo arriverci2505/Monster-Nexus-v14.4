@@ -1,0 +1,26 @@
+# Monster Bot v14.4 - Discord Integration
+# Python Package Requirements
+
+# Exchange Connectivity
+ccxt>=4.0.0
+
+# Data Processing
+pandas>=1.5.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Deep Learning
+torch>=2.0.0
+
+# Web Interface
+streamlit>=1.28.0
+
+# HTTP Requests (Discord Webhooks)
+requests>=2.31.0
+
+# Logging & Warnings
+# (Built-in to Python, no installation needed)
+
+# Optional but recommended:
+# matplotlib>=3.7.0  # For custom visualization
+# plotly>=5.14.0     # Interactive charts
