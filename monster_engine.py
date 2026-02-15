@@ -805,7 +805,7 @@ def main():
                         current_minute = vn_now.minute
                         
                         # Kiểm tra nếu phút hiện tại chia hết cho 5 và chưa gửi trong phút này
-                        if current_minute % 5 == 0 and current_minute != last_reported_minute:
+                        if current_minute % 5 == 0 and current_minute != last_webhook_report_time:
                             ai_vals = {
                                 'buy_p': p_buy,
                                 'sell_p': p_sell,
@@ -814,7 +814,7 @@ def main():
                             send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state, ai_vals)
                             
                             # Đánh dấu đã gửi phút này để không gửi lặp lại trong vòng 60 giây đó
-                            last_reported_minute = current_minute
+                            last_webhook_report_time = current_minute
                             logger.info(f"📡 Monster Nexus AI: Báo cáo định kỳ lúc {vn_now.strftime('%H:%M')}")
                                 
                         # Determine signal based on regime
