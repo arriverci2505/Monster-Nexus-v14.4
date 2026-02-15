@@ -91,40 +91,43 @@ STATE_FILE = "bot_state.json"
 
 last_webhook_report_time = 0 
 
-def send_ai_status_webhook(current_price, regime, config, state):
+def send_ai_status_webhook(current_price, regime, config, state, ai_results):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
     if not DISCORD_WEBHOOK or "discord.com" not in DISCORD_WEBHOOK:
-            return
+        return
         
-        # Tính Winrate
-        history = state.get('trade_history', [])
-        wins = len([t for t in history if t.get('pnl', 0) > 0])
-        wr = (wins / len(history) * 100) if history else 0.0
+    # Tính Winrate từ lịch sử giao dịch
+    history = state.get('trade_history', [])
+    wins = len([t for t in history if t.get('net_pnl', 0) > 0])
+    wr = (wins / len(history) * 100) if history else 0.0
     
-        payload = {
-            "embeds": [{
-                "title": "🟢 MATRIX AI - REAL-TIME PREDICTION",
-                "color": 0x00ff41, # Xanh Matrix
-                "fields": [
-                    {"name": "💵 Price", "value": f"${current_price:,.2f}", "inline": True},
-                    {"name": "📈 Win Rate", "value": f"{wr:.1f}%", "inline": True},
-                    {"name": "📊 Regime", "value": f"`{regime}`", "inline": True},
-                    
-                    # --- PHẦN QUAN TRỌNG: GIÁ TRỊ AI DỰ ĐOÁN THỰC TẾ ---
-                    {"name": "🧠 AI Final Score", "value": f"**{ai_results.get('score', 0):.4f}**", "inline": False},
-                    {"name": "🎯 Buy Prob", "value": f"{ai_results.get('buy_p', 0)*100:.1f}%", "inline": True},
-                    {"name": "🎯 Sell Prob", "value": f"{ai_results.get('sell_p', 0)*100:.1f}%", "inline": True},
-                    
-                    {"name": "🌡️ Config Temp", "value": f"{config.get('temperature')}", "inline": True},
-                    {"name": "🛡️ Open Trades", "value": f"{len(state['open_trades'])}", "inline": True}
-                ],
-                "footer": {"text": f"Dự đoán lúc: {datetime.now().strftime('%H:%M:%S')}"}
-            }]
-        }
-        try:
-            requests.post(DISCORD_WEBHOOK, json=payload, timeout=5)
-        except:
-            pass
+    # Chuẩn bị nội dung gửi đi
+    payload = {
+        "embeds": [{
+            "title": "🟢 MATRIX AI - REAL-TIME PREDICTION",
+            "color": 0x00ff41, # Màu xanh Matrix
+            "fields": [
+                {"name": "💵 Giá hiện tại", "value": f"${current_price:,.2f}", "inline": True},
+                {"name": "📊 Market Regime", "value": f"`{regime}`", "inline": True},
+                {"name": "📈 Win Rate", "value": f"{wr:.1f}%", "inline": True},
+                
+                # --- GIÁ TRỊ AI DỰ ĐOÁN THỰC TẾ ---
+                # Lấy xác suất lớn nhất làm "Final Score"
+                {"name": "🧠 AI Confidence", "value": f"**{max(ai_results.get('buy_p',0), ai_results.get('sell_p',0))*100:.2f}%**", "inline": False},
+                {"name": "🎯 Buy Prob", "value": f"{ai_results.get('buy_p', 0)*100:.1f}%", "inline": True},
+                {"name": "🎯 Sell Prob", "value": f"{ai_results.get('sell_p', 0)*100:.1f}%", "inline": True},
+                {"name": "😐 Neutral", "value": f"{ai_results.get('neutral_p', 0)*100:.1f}%", "inline": True},
+                
+                {"name": "🌡️ Temperature", "value": f"{config.get('temperature')}", "inline": True},
+                {"name": "🛡️ Lệnh đang mở", "value": f"{len(state['open_trades'])}", "inline": True}
+            ],
+            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {datetime.now().strftime('%H:%M:%S')}"}
+        }]
+    }
+    try:
+        requests.post(DISCORD_WEBHOOK, json=payload, timeout=5)
+    except Exception as e:
+        logger.error(f"Lỗi gửi Webhook: {e}")
         
 # ════════════════════════════════════════════════════════════════════════════
 # PYTORCH MODEL ARCHITECTURE
