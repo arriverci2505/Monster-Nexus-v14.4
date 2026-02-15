@@ -94,35 +94,37 @@ last_webhook_report_time = 0
 def send_ai_status_webhook(current_price, regime, config, state):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
     if not DISCORD_WEBHOOK or "discord.com" not in DISCORD_WEBHOOK:
-        return
-
-    # Tính toán Winrate hiện tại
-    history = state.get('trade_history', [])
-    wins = len([t for t in history if t.get('pnl', 0) > 0])
-    wr = (wins / len(history) * 100) if history else 0.0
-
-    content = {
-        "embeds": [{
-            "title": "🟢 ARES TITAN AI - PERIODIC REPORT",
-            "description": f"Báo cáo thông số hệ thống mỗi 5 phút",
-            "color": 5763719, # Màu xanh lá Matrix
-            "fields": [
-                {"name": "💵 Current Price", "value": f"${current_price:,.2f}", "inline": True},
-                {"name": "📊 Market Regime", "value": f"`{regime}`", "inline": True},
-                {"name": "📈 Win Rate", "value": f"{wr:.1f}% ({len(history)} trades)", "inline": True},
-                {"name": "🧠 Buy Threshold", "value": f"`{config['buy_threshold']}`", "inline": True},
-                {"name": "🧠 Sell Threshold", "value": f"`{config['sell_threshold']}`", "inline": True},
-                {"name": "🌡️ AI Temperature", "value": f"`{config['temperature']}`", "inline": True},
-                {"name": "🛡️ Open Positions", "value": f"{len(state['open_trades'])}", "inline": True},
-                {"name": "⏳ Pending Orders", "value": f"{len(state['pending_orders'])}", "inline": True}
-            ],
-            "footer": {"text": f"Titan Engine v14.4 | Server Time: {datetime.now().strftime('%H:%M:%S')}"}
-        }]
-    }
-    try:
-        requests.post(DISCORD_WEBHOOK, json=content, timeout=10)
-    except Exception as e:
-        logger.error(f"Webhook Error: {e}")
+            return
+        
+        # Tính Winrate
+        history = state.get('trade_history', [])
+        wins = len([t for t in history if t.get('pnl', 0) > 0])
+        wr = (wins / len(history) * 100) if history else 0.0
+    
+        payload = {
+            "embeds": [{
+                "title": "🟢 MATRIX AI - REAL-TIME PREDICTION",
+                "color": 0x00ff41, # Xanh Matrix
+                "fields": [
+                    {"name": "💵 Price", "value": f"${current_price:,.2f}", "inline": True},
+                    {"name": "📈 Win Rate", "value": f"{wr:.1f}%", "inline": True},
+                    {"name": "📊 Regime", "value": f"`{regime}`", "inline": True},
+                    
+                    # --- PHẦN QUAN TRỌNG: GIÁ TRỊ AI DỰ ĐOÁN THỰC TẾ ---
+                    {"name": "🧠 AI Final Score", "value": f"**{ai_results.get('score', 0):.4f}**", "inline": False},
+                    {"name": "🎯 Buy Prob", "value": f"{ai_results.get('buy_p', 0)*100:.1f}%", "inline": True},
+                    {"name": "🎯 Sell Prob", "value": f"{ai_results.get('sell_p', 0)*100:.1f}%", "inline": True},
+                    
+                    {"name": "🌡️ Config Temp", "value": f"{config.get('temperature')}", "inline": True},
+                    {"name": "🛡️ Open Trades", "value": f"{len(state['open_trades'])}", "inline": True}
+                ],
+                "footer": {"text": f"Dự đoán lúc: {datetime.now().strftime('%H:%M:%S')}"}
+            }]
+        }
+        try:
+            requests.post(DISCORD_WEBHOOK, json=payload, timeout=5)
+        except:
+            pass
         
 # ════════════════════════════════════════════════════════════════════════════
 # PYTORCH MODEL ARCHITECTURE
@@ -638,16 +640,6 @@ def main():
             # Determine regime
             is_trending = adx >= LIVE_CONFIG['trending_adx_min']
             regime = 'TRENDING' if is_trending else 'SIDEWAY'
-
-            global last_webhook_report_time  # Đảm bảo bạn đã khai báo biến này ở đầu file
-            if time.time() - last_webhook_report_time > 300: # 300 giây = 5 phút
-                try:
-                    # Gọi hàm gửi báo cáo 
-                    send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state)
-                    last_webhook_report_time = time.time()
-                    logger.info("📡 Đã gửi báo cáo AI định kỳ lên Discord.")
-                except Exception as e:
-                    logger.error(f"Lỗi khi gửi báo cáo định kỳ: {e}")
                     
             # ═══════════════════════════════════════════════════════════════
             # POSITION MANAGEMENT - Check existing trades
@@ -791,7 +783,17 @@ def main():
                         p_buy = probabilities[0]
                         p_neutral = probabilities[1]
                         p_sell = probabilities[2]
-                        
+
+                        global last_webhook_report_time  # Đảm bảo bạn đã khai báo biến này ở đầu file
+                        if time.time() - last_webhook_report_time > 300: # 300 giây = 5 phút
+                            try:
+                                # Gọi hàm gửi báo cáo 
+                                send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state)
+                                last_webhook_report_time = time.time()
+                                logger.info("📡 Đã gửi báo cáo AI định kỳ lên Discord.")
+                            except Exception as e:
+                                logger.error(f"Lỗi khi gửi báo cáo định kỳ: {e}")
+                                
                         # Determine signal based on regime
                         if is_trending:
                             buy_threshold = LIVE_CONFIG['trending_buy_threshold']
