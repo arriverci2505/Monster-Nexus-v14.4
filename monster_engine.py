@@ -18,6 +18,23 @@ import warnings
 import logging
 from datetime import datetime, timedelta
 from scipy import signal as scipy_signal
+import subprocess
+import sys
+import os
+
+def start_engine():
+    # Sử dụng biến file giả để kiểm tra xem engine đã được kích hoạt trong session này chưa
+    if "engine_started" not in st.session_state:
+        st.info("🚀 Đang khởi động Ares Titan Engine trên Cloud...")
+        # Chạy monster_engine.py như một tiến trình độc lập
+        subprocess.Popen([sys.executable, "monster_engine.py"], 
+                         stdout=subprocess.PIPE, 
+                         stderr=subprocess.PIPE)
+        st.session_state.engine_started = True
+        time.sleep(5) # Đợi 5 giây để engine kịp tạo file JSON lần đầu
+        st.rerun()
+
+start_engine()
 
 # ════════════════════════════════════════════════════════════════════════════
 # CONFIGURATION
