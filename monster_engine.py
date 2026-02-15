@@ -926,7 +926,7 @@ def main():
             
             # Calculate sleep time to next candle
             loop_duration = time.time() - loop_start_time
-            sleep_time = max(1, 60 - loop_duration)
+            sleep_time = max(5, 60 - loop_duration)
             
             logger.info(f"Cycle complete | Price: ${current_price:,.2f} | Regime: {regime} | Open: {len(state['open_trades'])} | Pending: {len(state['pending_orders'])}")
             time.sleep(sleep_time)
