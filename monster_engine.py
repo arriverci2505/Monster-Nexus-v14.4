@@ -93,7 +93,7 @@ last_webhook_report_time = 0
 
 def send_ai_status_webhook(current_price, regime, config, state):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
-    if not DISCORD_WEBHOOKL or "discord.com" not in DISCORD_WEBHOOK:
+    if not DISCORD_WEBHOOK or "discord.com" not in DISCORD_WEBHOOK:
         return
 
     # Tính toán Winrate hiện tại
