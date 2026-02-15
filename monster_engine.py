@@ -89,6 +89,7 @@ DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472606305645625458/V-G8QB7n
 # State file
 STATE_FILE = "bot_state.json"
 
+vn_time = datetime.utcnow() + timedelta(hours=7)
 last_webhook_report_time = 0 
 
 def send_ai_status_webhook(current_price, regime, config, state, ai_results):
@@ -121,7 +122,7 @@ def send_ai_status_webhook(current_price, regime, config, state, ai_results):
                 {"name": "🌡️ Temperature", "value": f"{config.get('temperature')}", "inline": True},
                 {"name": "🛡️ Lệnh đang mở", "value": f"{len(state['open_trades'])}", "inline": True}
             ],
-            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {datetime.now().strftime('%H:%M:%S') + timedelta(hours=7)}"}
+            "footer": {"text": f"Engine v14.4 | Cập nhật lúc: {vn_time.strftime("%H:%M")}"}
         }]
     }
     try:
