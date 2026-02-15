@@ -37,7 +37,7 @@ LIVE_CONFIG = {
     'exchange': 'kraken',
     'symbol': 'BTC/USDT',
     'timeframe': '15m',
-    'sequence_length': 30,
+    'sequence_length': 60,
 
     # --- 2. AI THRESHOLDS ---
     'temperature': 1.2,
