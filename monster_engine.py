@@ -639,10 +639,10 @@ def main():
             is_trending = adx >= LIVE_CONFIG['trending_adx_min']
             regime = 'TRENDING' if is_trending else 'SIDEWAY'
 
-            global last_webhook_report_time # Đảm bảo bạn đã khai báo biến này ở đầu file
+            global last_webhook_report_time  # Đảm bảo bạn đã khai báo biến này ở đầu file
             if time.time() - last_webhook_report_time > 300: # 300 giây = 5 phút
                 try:
-                    # Gọi hàm gửi báo cáo (Sử dụng hàm send_periodic_report tôi đã viết trước đó)
+                    # Gọi hàm gửi báo cáo 
                     send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state)
                     last_webhook_report_time = time.time()
                     logger.info("📡 Đã gửi báo cáo AI định kỳ lên Discord.")
