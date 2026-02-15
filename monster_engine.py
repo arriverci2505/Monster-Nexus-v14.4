@@ -798,7 +798,7 @@ def main():
                         current_minute = vn_now.minute
 
                         # Kiểm tra mốc 5 phút (ví dụ: 0, 5, 10, 15...)
-                        if current_minute % 5 == 0 and current_minute != LIVE_CONFIG['last_reported_minute']:
+                        if current_minute % 5 == 0 and current_minute != LIVE_CONFIG['last_webhook_report_time']:
                             
                             ai_vals = {
                                 'buy_p': p_buy,
@@ -810,7 +810,7 @@ def main():
                             send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state, ai_vals)
                             
                             # CẬP NHẬT TRỰC TIẾP VÀO CONFIG ĐỂ KHÓA PHÚT NÀY LẠI
-                            LIVE_CONFIG['last_reported_minute'] = current_minute
+                            LIVE_CONFIG['last_webhook_report_time'] = current_minute
                             
                             logger.info(f"📡 [Monster Nexus AI] Báo cáo định kỳ lúc {vn_now.strftime('%H:%M:%S')}")
                                 
