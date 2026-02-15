@@ -18,6 +18,13 @@ import warnings
 import logging
 from datetime import datetime, timedelta
 from scipy import signal as scipy_signal
+import subprocess
+import os
+
+# Khởi chạy engine nếu chưa chạy
+if "engine_started" not in st.session_state:
+    subprocess.Popen(["python", "monster_engine.py"])
+    st.session_state.engine_started = True
 
 # ════════════════════════════════════════════════════════════════════════════
 # CONFIGURATION
