@@ -796,17 +796,21 @@ def main():
                         p_sell = probabilities[2]
 
                         global last_webhook_report_time
-                        if time.time() - last_webhook_report_time > 300:
-                            # 1. Tạo dictionary chứa kết quả AI vừa dự đoán
+                        vn_now = get_vn_time()
+                        current_minute = vn_now.minute
+                        
+                        # Kiểm tra nếu phút hiện tại chia hết cho 5 và chưa gửi trong phút này
+                        if current_minute % 5 == 0 and current_minute != last_reported_minute:
                             ai_vals = {
-                                'buy_p': p_buy,      
-                                'sell_p': p_sell,  
-                                'neutral_p': p_neutral 
+                                'buy_p': p_buy,
+                                'sell_p': p_sell,
+                                'neutral_p': p_neutral
                             }
-                            
                             send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state, ai_vals)
                             
-                            last_webhook_report_time = time.time()
+                            # Đánh dấu đã gửi phút này để không gửi lặp lại trong vòng 60 giây đó
+                            last_reported_minute = current_minute
+                            logger.info(f"📡 Monster Nexus AI: Báo cáo định kỳ lúc {vn_now.strftime('%H:%M')}")time()
                                 
                         # Determine signal based on regime
                         if is_trending:
