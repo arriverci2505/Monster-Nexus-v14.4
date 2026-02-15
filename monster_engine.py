@@ -815,7 +815,7 @@ def main():
                             
                             # Đánh dấu đã gửi phút này để không gửi lặp lại trong vòng 60 giây đó
                             last_reported_minute = current_minute
-                            logger.info(f"📡 Monster Nexus AI: Báo cáo định kỳ lúc {vn_now.strftime('%H:%M')}")time()
+                            logger.info(f"📡 Monster Nexus AI: Báo cáo định kỳ lúc {vn_now.strftime('%H:%M')}")
                                 
                         # Determine signal based on regime
                         if is_trending:
