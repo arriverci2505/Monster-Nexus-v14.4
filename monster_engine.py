@@ -104,7 +104,7 @@ def send_ai_status_webhook(current_price, regime, config, state, ai_results):
     # Chuẩn bị nội dung gửi đi
     payload = {
         "embeds": [{
-            "title": "👾 MONSTER NEXUS AI - REAL-TIME PREDICTION"",
+            "title": "👾 MONSTER NEXUS AI - REAL-TIME PREDICTION",
             "color": 0x00ff41, # Màu xanh Matrix
             "fields": [
                 {"name": "💵 Giá hiện tại", "value": f"${current_price:,.2f}", "inline": True},
