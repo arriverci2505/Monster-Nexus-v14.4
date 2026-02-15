@@ -89,7 +89,7 @@ DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472606305645625458/V-G8QB7n
 # State file
 STATE_FILE = "bot_state.json"
 
-last_report_time = 0 
+llast_webhook_report_time = 0 
 
 def send_ai_status_webhook(current_price, regime, config, state):
     """Gửi báo cáo thông số AI và trạng thái Bot lên Discord mỗi 5 phút"""
