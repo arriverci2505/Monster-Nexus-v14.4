@@ -82,7 +82,7 @@ LIVE_CONFIG = {
     'slippage': 0.0005,
     'commission': 0.00075,
 
-    'last_webhook_report_time' = -1
+    'last_webhook_report_time': -1
 }
 
 # Discord Webhook (set via environment variable or edit here)
