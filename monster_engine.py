@@ -794,15 +794,18 @@ def main():
                         p_neutral = probabilities[1]
                         p_sell = probabilities[2]
 
-                        global last_webhook_report_time  # Đảm bảo bạn đã khai báo biến này ở đầu file
-                        if time.time() - last_webhook_report_time > 300: # 300 giây = 5 phút
-                            try:
-                                # Gọi hàm gửi báo cáo 
-                                send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state)
-                                last_webhook_report_time = time.time()
-                                logger.info("📡 Đã gửi báo cáo AI định kỳ lên Discord.")
-                            except Exception as e:
-                                logger.error(f"Lỗi khi gửi báo cáo định kỳ: {e}")
+                        global last_webhook_report_time
+                        if time.time() - last_webhook_report_time > 300:
+                            # 1. Tạo dictionary chứa kết quả AI vừa dự đoán
+                            ai_vals = {
+                                'buy_p': p_buy,      
+                                'sell_p': p_sell,  
+                                'neutral_p': p_neutral 
+                            }
+                            
+                            send_ai_status_webhook(current_price, regime, LIVE_CONFIG, state, ai_vals)
+                            
+                            last_webhook_report_time = time.time()
                                 
                         # Determine signal based on regime
                         if is_trending:
