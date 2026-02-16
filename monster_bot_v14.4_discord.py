@@ -7,6 +7,20 @@ import ccxt
 import numpy as np
 from datetime import datetime
 import streamlit.components.v1 as components
+import subprocess
+
+# --- ĐOẠN CODE KÍCH HOẠT BOT NGẦM ---
+def start_engine():
+    # Kiểm tra xem Bot đã chạy chưa (dựa vào file bot_state.json)
+    # Hoặc dùng một biến session_state để tránh chạy đè nhiều con Bot
+    if 'engine_started' not in st.session_state:
+        st.write("⏳ Đang khởi động Monster Engine ngầm...")
+        # Lệnh này sẽ chạy file monster_engine.py như một tiến trình riêng
+        subprocess.Popen(["python", "monster_engine.py"])
+        st.session_state['engine_started'] = True
+        time.sleep(2) # Đợi 2 giây để Bot kịp tạo file json
+
+start_engine()
 
 # Cấu hình trang
 st.set_page_config(page_title="MONSTER MATRIX UI v14.4", layout="wide")
