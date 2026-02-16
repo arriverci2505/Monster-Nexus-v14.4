@@ -85,7 +85,7 @@ LIVE_CONFIG = {
 }
 
 # Discord Webhook (set via environment variable or edit here)
-DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472606305645625458/V-G8QB7nFShXOdOdBy1WRntWmp8vmGzg8-aOv7-hfXqiCHqNmZfjuzrn1B7K7hTNTMhc"  # Set your webhook URL here or via env var
+DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1472776784205447360/NQaLrcBstxG1vLpwIcHREhPRlFphGFSKl2lUreNMZxHdX4zVk-81F7ACogFUA6fepMMH"  # Set your webhook URL here or via env var
 
 # State file
 STATE_FILE = "bot_state.json"
