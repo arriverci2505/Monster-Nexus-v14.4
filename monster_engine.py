@@ -18,7 +18,9 @@ import warnings
 import logging
 from datetime import datetime, timedelta
 from scipy import signal as scipy_signal
-
+import os
+st.write(f"Thư mục hiện tại: {os.getcwd()}")
+st.write(f"Danh sách file đang có: {os.listdir('.')}")
 # ════════════════════════════════════════════════════════════════════════════
 # CONFIGURATION
 # ════════════════════════════════════════════════════════════════════════════
